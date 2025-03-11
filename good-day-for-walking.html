@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html style="font-size: 16px" lang="en">
+
+<head>
+    <title>Is it a Good Day for Walking?</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body style="background-color: #BDEFC8">
+    <div class="header">
+        <h1 class="ubuntu-regular">Is it a Good Day for Walking?</h1>
+    </div>
+
+    <div class="search">
+        <h2 class="rubik-header">Find your City</h2>
+        <input type="text" id="cityName" placeholder="Enter City Name">
+        <button onclick="searchCity()">Search</button>
+    </div>
+
+    <div id="result-display">
+        <div id="location-name" class="rubik-body"></div>
+    </div>
+
+    <div id="row1">
+        <div class="tile precipitation">
+            <h2 class="rubik-header">Precipitation</h2>
+            <div id="precip-amt" class="rubik-body hidden"></div>
+            <img>
+        </div>
+
+        <div class="tile temperature">
+            <h2 class="rubik-header">Temperature</h2>
+            <p></p>
+        </div>
+    </div>
+    <div id="row2">
+        <div class="tile air-quality">
+            <h2 class="rubik-header">Air Quality</h2>
+        </div>
+
+        <div class="tile wind-speed">
+            <h2 class="rubik-header">Wind Speed</h2>
+        </div>
+    </div>
+
+    <!-- load script after the rest of the page for performance -->
+    <script src="config.js"></script>
+    <script src="index.js"></script>
+</body>
+
+</html>
