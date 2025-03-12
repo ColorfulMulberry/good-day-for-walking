@@ -20,29 +20,31 @@
         <button onclick="searchCity()">Search</button>
     </div>
 
-    <div id="result-display">
+    <div id="result-display" class="hidden">
         <div id="location-name" class="rubik-body"></div>
     </div>
 
-    <div id="row1">
+    <div id="row1" class="row hidden">
         <div class="tile precipitation">
             <h2 class="rubik-header">Precipitation</h2>
-            <div id="precip-amt" class="rubik-body hidden"></div>
+            <div id="precip-amt" class="rubik-body"></div>
             <img>
         </div>
 
         <div class="tile temperature">
             <h2 class="rubik-header">Temperature</h2>
-            <p></p>
+            <div id="current-temp" class="rubik-body"></div>
         </div>
     </div>
-    <div id="row2">
-        <div class="tile air-quality">
-            <h2 class="rubik-header">Air Quality</h2>
-        </div>
-
+    <div id="row2" class="row hidden">
         <div class="tile wind-speed">
             <h2 class="rubik-header">Wind Speed</h2>
+            <div id="wind" class="rubik-body"></div>
+        </div>
+
+        <div class="tile air-quality">
+            <h2 class="rubik-header">Air Quality</h2>
+            <div id="aqi" class="rubik-body"></div>
         </div>
     </div>
 
