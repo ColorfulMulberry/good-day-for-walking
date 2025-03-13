@@ -506,8 +506,8 @@ function getCountryName(countryCode) {
 }
 
 function getCountryCode(countryName) {
-    if (isoCountries.hasOwnProperty(countryName)) {
-        return isoCountries[countryName];
+    if (iso2CodesByCountryName.hasOwnProperty(countryName)) {
+        return iso2CodesByCountryName[countryName];
     } else {
         return false;
     }

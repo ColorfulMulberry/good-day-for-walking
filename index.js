@@ -90,7 +90,7 @@ function displayData(data) {
 function setResultDisplay(data) {
     if (Object.hasOwn(data, 'name')) {
         if (Object.hasOwn(data, 'sys') && Object.hasOwn(data.sys, 'country')) {
-            document.getElementById("location-name").innerHTML = data.name + ", " + data.sys.country;
+            document.getElementById("location-name").innerHTML = data.name + ", " + getCountryName(data.sys.country);
         }
         else {
             document.getElementById("location-name").innerHTML = data.name;
