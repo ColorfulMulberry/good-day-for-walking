@@ -9,19 +9,22 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 
-<body style="background-color: #BDEFC8">
+<body style="background-color: #000">
     <div class="header">
         <h1 class="ubuntu-regular">Is it a Good Day for Walking?</h1>
     </div>
 
     <div class="search">
         <h2 class="rubik-header">Find your City</h2>
-        <input type="text" id="cityName" placeholder="Enter City Name">
-        <button onclick="searchCity()">Search</button>
+
+        <p><input type="text" id="cityName" class="rubik-input" placeholder="City Name" /></p>
+        <p><input type="text" id="countryName" class="rubik-input" placeholder="Country Name (Optional)" /></p>
+        <button class="rubik-input" onclick="searchCity()">Search</button>
     </div>
 
     <div id="result-display" class="hidden">
         <div id="location-name" class="rubik-body"></div>
+        <div id="result" class="rubik-body"></div>
     </div>
 
     <div id="row1" class="row hidden">
@@ -49,6 +52,7 @@
     </div>
 
     <!-- load script after the rest of the page for performance -->
+    <script src="countryMapping.js"></script>
     <script src="config.js"></script>
     <script src="index.js"></script>
 </body>

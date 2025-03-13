@@ -1,9 +1,24 @@
 function searchCity() {
     let apikey = key;
     let city = document.getElementById("cityName").value;
-    // let country = "," + document...   put an if statement here to check if country input empty
+    let country = document.getElementById("countryName").value;
+
+    // city left empty
+    if (!city) {
+        document.getElementById("result").innerHTML = "A city name is required for fetching weather data.";
+    }
+    else {
+        if (getCountryCode(country.toLowerCase())) {
+            country = "," + getCountryCode(country.toLowerCase());
+        }
+        else if (country != "") { // else country name was not found
+            document.getElementById("result").innerHTML = "Invalid country name. Try re-entering it or leaving it blank.";
+            country = "";
+        }
+    }
+
     // use the geocoding api to fetch the coordinates of the city being searched
-    let url = `https://api.openweathermap.org/geo/1.0/direct?q=${city}&appid=${apikey}`;
+    let url = `https://api.openweathermap.org/geo/1.0/direct?q=${city}${country}&appid=${apikey}`;
     fetch(url)
         .then(res => {
             if (!res.ok) {
@@ -89,10 +104,10 @@ function setResultDisplay(data) {
 // set the values in the precipitation tile
 function setPrecipitation(data) {
     if (Object.hasOwn(data, 'rain')) {
-        document.getElementById("precip-amt").innerHTML = "Rain - " + data.rain["1h"] + " mm/hour";
+        document.getElementById("precip-amt").innerHTML = `Rain - ${data.rain["1h"]} mm/hour`;
     }
     else if (Object.hasOwn(data, 'snow')) {
-        document.getElementById("precip-amt").innerHTML = "Snow - " + data.snow["1h"] + " mm/hour";
+        document.getElementById("precip-amt").innerHTML = `Snow - ${data.snow["1h"]} mm/hour`;
     }
     else {
         document.getElementById("precip-amt").innerHTML = "No Precipitation";
@@ -105,26 +120,33 @@ function setTemperature(data) {
         document.getElementById("current-temp").innerHTML = data.main.temp + "°C";
     }
     else {
-        document.getElementById("current-temp").innerHTML = "No Temperature Data Found";
+        document.getElementById("current-temp").innerHTML = "[No Temperature Data Found]";
     }
 }
 
 // set the values in the wind speed tile
 function setWindSpeed(data) {
     if (Object.hasOwn(data, 'wind') && Object.hasOwn(data.wind, 'speed')) {
-        document.getElementById("wind").innerHTML = data.wind.speed + "m/s";
+        document.getElementById("wind").innerHTML = Math.round(data.wind.speed * 36) / 10 + " km/h";
     }
     else {
-        document.getElementById("wind").innerHTML = "No Wind Speed Data Found";
+        document.getElementById("wind").innerHTML = "[No Wind Speed Data Found]";
     }
 }
 
 // set the values in the wind speed tile
 function setAirQuality(data) {
+    const scores = {
+        1: 'Good',
+        2: 'Fair',
+        3: 'Moderate',
+        4: 'Poor',
+        5: 'Very Poor',
+    }
     if (Object.hasOwn(data, 'list') && Object.hasOwn(data.list[0], 'main') && Object.hasOwn(data.list[0].main, 'aqi')) {
-        document.getElementById("aqi").innerHTML = "Air Quality Index: " + data.list[0].main.aqi;
+        document.getElementById("aqi").innerHTML = `${data.list[0].main.aqi} (${scores[data.list[0].main.aqi]})`;
     }
     else {
-        document.getElementById("aqi").innerHTML = "No Air Quality Data Found";
+        document.getElementById("aqi").innerHTML = "[No Air Quality Data Found]";
     }
 }
