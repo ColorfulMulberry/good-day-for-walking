@@ -204,6 +204,7 @@ var isoCountries = {
     'SO': 'Somalia',
     'ZA': 'South Africa',
     'GS': 'South Georgia And Sandwich Isl.',
+    'SS': 'South Sudan',
     'ES': 'Spain',
     'LK': 'Sri Lanka',
     'SD': 'Sudan',

@@ -1,24 +1,28 @@
 function searchCity() {
-    let apikey = key;
+    this.apikey = key;
     let city = document.getElementById("cityName").value;
     let country = document.getElementById("countryName").value;
+    this.lat = 0;
+    this.lon = 0;
+    this.cityName = "";
 
     // city left empty
     if (!city) {
-        document.getElementById("result").innerHTML = "A city name is required for fetching weather data.";
+        displayError("A city name is required for fetching weather data.");
+        return false;
     }
     else {
         if (getCountryCode(country.toLowerCase())) {
             country = "," + getCountryCode(country.toLowerCase());
         }
         else if (country != "") { // else country name was not found
-            document.getElementById("result").innerHTML = "Invalid country name. Try re-entering it or leaving it blank.";
-            country = "";
+            displayError("Invalid country name. Try re-entering it or leave it blank.");
+            return false;
         }
     }
 
     // use the geocoding api to fetch the coordinates of the city being searched
-    let url = `https://api.openweathermap.org/geo/1.0/direct?q=${city}${country}&appid=${apikey}`;
+    let url = `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(city)}${encodeURIComponent(country)}&appid=${apikey}`;
     fetch(url)
         .then(res => {
             if (!res.ok) {
@@ -27,11 +31,16 @@ function searchCity() {
             return res.json();
         })
         .then(data => {
-            if (data) {
-                let lat = data[0].lat;
-                let lon = data[0].lon;
-                fetchWeather(lat, lon, apikey);
-                fetchAirQuality(lat, lon, apikey);
+            if (data.length != 0) {
+                this.lat = data[0].lat;
+                this.lon = data[0].lon;
+                this.cityName = data[0].name;
+                fetchWeather();
+                fetchAirQuality();
+            }
+            else {
+                displayError("Invalid city name. Try re-entering it.");
+                return false;
             }
         })
         .catch(err => {
@@ -40,46 +49,63 @@ function searchCity() {
 }
 
 // gets all weather data for the given city
-function fetchWeather(lat, lon, apikey) {
-    let url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apikey}&units=metric`;
+function fetchWeather() {
+    let url = `https://api.openweathermap.org/data/2.5/weather?lat=${this.lat}&lon=${this.lon}&appid=${this.apikey}&units=metric`;
     fetch(url)
         .then(res => {
             if (!res.ok) {
-                throw new Error("Response from server was not OK.");
+                displayError("Response from server was not OK.");
             }
-            return res.json();
+            else {
+                return res.json();
+            }
         })
         .then(data => {
             displayData(data);
         })
         .catch(err => {
-            console.error(err);
+            displayError(err);
         });
 }
 
 // gets air quality data for the given city
-function fetchAirQuality(lat, lon, apikey) {
-    let url = `https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${apikey}`;
+function fetchAirQuality() {
+    let url = `https://api.openweathermap.org/data/2.5/air_pollution?lat=${this.lat}&lon=${this.lon}&appid=${this.apikey}`;
     fetch(url)
         .then(res => {
             if (!res.ok) {
-                throw new Error("Response from server was not OK.");
+                displayError("Response from server was not OK.");
             }
-            return res.json();
+            else {
+                return res.json();
+            }
         })
         .then(data => {
             setAirQuality(data);
         })
         .catch(err => {
-            console.error(err);
+            displayError(err);
         });
+}
+
+function displayError(errorMsg) {
+    // hide result components, show error component
+    document.getElementById("row1").style.display = "hidden";
+    document.getElementById("row2").style.display = "hidden";
+    document.getElementById("result-display").style.display = "hidden";
+    document.getElementById("error-display").style.display = "block";
+
+    document.getElementById("err-msg").innerHTML = errorMsg;
 }
 
 // make tiles visible if search succeeds
 function displayData(data) {
+    // make results components visible, hide error component
     document.getElementById("row1").style.display = "flex";
     document.getElementById("row2").style.display = "flex";
     document.getElementById("result-display").style.display = "block";
+    document.getElementById("error-display").style.display = "hidden";
+    // set text fields in result components
     setPrecipitation(data);
     setResultDisplay(data);
     setTemperature(data);
@@ -90,7 +116,13 @@ function displayData(data) {
 function setResultDisplay(data) {
     if (Object.hasOwn(data, 'name')) {
         if (Object.hasOwn(data, 'sys') && Object.hasOwn(data.sys, 'country')) {
-            document.getElementById("location-name").innerHTML = data.name + ", " + getCountryName(data.sys.country);
+            if (getCountryName(data.sys.country)) {
+                console.log(data.sys.country);
+                document.getElementById("location-name").innerHTML = this.cityName + ", " + getCountryName(data.sys.country);
+            }
+            else {
+                document.getElementById("location-name").innerHTML = this.cityName;
+            }
         }
         else {
             document.getElementById("location-name").innerHTML = data.name;
