@@ -22,7 +22,7 @@ function searchCity() {
     }
 
     // use the geocoding api to fetch the coordinates of the city being searched
-    let url = `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(city)}${encodeURIComponent(country)}&appid=${apikey}`;
+    let url = `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(city)}${encodeURIComponent(country)}&appid=${this.apikey}`;
     fetch(url)
         .then(res => {
             if (!res.ok) {
@@ -36,7 +36,6 @@ function searchCity() {
                 this.lon = data[0].lon;
                 this.cityName = data[0].name;
                 fetchWeather();
-                fetchAirQuality();
             }
             else {
                 displayError("Invalid city name. Try re-entering it.");
@@ -69,7 +68,7 @@ function fetchWeather() {
 }
 
 // gets air quality data for the given city
-function fetchAirQuality() {
+function fetchAirQuality(weatherData) {
     let url = `https://api.openweathermap.org/data/2.5/air_pollution?lat=${this.lat}&lon=${this.lon}&appid=${this.apikey}`;
     fetch(url)
         .then(res => {
@@ -90,9 +89,9 @@ function fetchAirQuality() {
 
 function displayError(errorMsg) {
     // hide result components, show error component
-    document.getElementById("row1").style.display = "hidden";
-    document.getElementById("row2").style.display = "hidden";
-    document.getElementById("result-display").style.display = "hidden";
+    document.getElementById("row1").style.display = "none";
+    document.getElementById("row2").style.display = "none";
+    document.getElementById("result-display").style.display = "none";
     document.getElementById("error-display").style.display = "block";
 
     document.getElementById("err-msg").innerHTML = errorMsg;
@@ -104,12 +103,15 @@ function displayData(data) {
     document.getElementById("row1").style.display = "flex";
     document.getElementById("row2").style.display = "flex";
     document.getElementById("result-display").style.display = "block";
-    document.getElementById("error-display").style.display = "hidden";
+    document.getElementById("error-display").style.display = "none";
+
     // set text fields in result components
     setPrecipitation(data);
     setResultDisplay(data);
     setTemperature(data);
     setWindSpeed(data);
+
+    fetchAirQuality(data);
 }
 
 // set the values in the result display

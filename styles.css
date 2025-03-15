@@ -135,10 +135,6 @@ body {
     margin-bottom: 1rem;
 }
 
-.hidden {
-    display: none;
-}
-
 input {
     border-top: none;
     border-left: none;
@@ -167,6 +163,10 @@ button:hover {
 
 button:active {
     background: #EE2F2F;
+}
+
+.hide {
+    display: none;
 }
 
 /* when screen width <= 700px */
