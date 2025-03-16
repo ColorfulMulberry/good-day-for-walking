@@ -133,6 +133,11 @@ function setResultDisplay(data) {
     else {
         document.getElementById("location-name").innerHTML = "Name Not Found";
     }
+
+    if (Object.hasOwn(data, 'weather') && Object.hasOwn(data.weather[0], 'icon')) {
+        console.log("hi");
+        document.getElementById("result-weather").src = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
+    }
 }
 
 // set the values in the precipitation tile

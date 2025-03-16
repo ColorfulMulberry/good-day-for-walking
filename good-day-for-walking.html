@@ -16,10 +16,12 @@
 
     <div class="search">
         <h2 class="rubik-header">Find your City</h2>
-
-        <p><input type="text" id="cityName" class="rubik-input" placeholder="City Name" /></p>
-        <p><input type="text" id="countryName" class="rubik-input" placeholder="Country Name (Optional)" /></p>
-        <button class="rubik-input" onclick="searchCity()">Search</button>
+        <!-- runs the search if enter is pressed in either input box -->
+        <p><input type="text" id="cityName" onkeyup="if (event.keyCode == 13) searchCity()" class="rubik-body"
+                placeholder="City Name" /></p>
+        <p><input type="text" id="countryName" onkeyup="if (event.keyCode == 13) searchCity()" class="rubik-body"
+                placeholder="Country Name (Optional)" /></p>
+        <button class="rubik-body" onclick="searchCity()">Search</button>
     </div>
 
     <div id="error-display" class="hide">
@@ -28,7 +30,17 @@
 
     <div id="result-display" class="hide">
         <div id="location-name" class="rubik-body"></div>
-        <div id="result" class="rubik-body"></div>
+        <div id="result">
+            <div id="res-left">
+                <img id="result-weather" src="" />
+                <p class="rubik-body">thunderstorm with heavy drizzle</p>
+            </div>
+            <div id="res-right" style="display:flex;">
+                <p class="rubik-body" style="margin: auto;">
+                    Hello World
+                </p>
+            </div>
+        </div>
     </div>
 
     <div id="row1" class="row hide">

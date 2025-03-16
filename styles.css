@@ -56,16 +56,6 @@ body {
     color: white;
 }
 
-.rubik-input {
-    font-family: "Rubik", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 300;
-    font-style: normal;
-    font-size: 2.2rem;
-    text-align: center;
-    color: white;
-}
-
 /*
     content div styling
 */
@@ -109,6 +99,34 @@ body {
     border-radius: 20px;
     margin: 0.5%;
     color: white;
+}
+
+#result {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+}
+
+#location-name {
+    margin-bottom: 1rem;
+}
+
+#result-weather {
+    width: 30%;
+    height: auto;
+}
+
+#res-left {
+    width: 25%;
+    margin-left: 15%;
+    margin-right: 5%;
+    border: thin solid greenyellow;
+}
+
+#res-right {
+    width: 40%;
+    margin-right: 15%;
+    border: thin solid goldenrod;
 }
 
 #error-display {
