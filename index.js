@@ -1,9 +1,11 @@
+// finds a city given a mandatory city name and optional country name
 function searchCity() {
     this.apikey = key;
     let city = document.getElementById("cityName").value;
     let country = document.getElementById("countryName").value;
     this.lat = 0;
     this.lon = 0;
+    // using the city name returned from geocoding since weather api can return incorrect city name
     this.cityName = "";
 
     // city left empty
@@ -120,7 +122,7 @@ function setResultDisplay(data) {
         if (Object.hasOwn(data, 'sys') && Object.hasOwn(data.sys, 'country')) {
             if (getCountryName(data.sys.country)) {
                 console.log(data.sys.country);
-                document.getElementById("location-name").innerHTML = this.cityName + ", " + getCountryName(data.sys.country);
+                document.getElementById("location-name").innerHTML = this.cityName + ", " + getCountryName(data.sys.country) + " " + isoToUnicode(data.sys.country);
             }
             else {
                 document.getElementById("location-name").innerHTML = this.cityName;
@@ -134,9 +136,13 @@ function setResultDisplay(data) {
         document.getElementById("location-name").innerHTML = "Name Not Found";
     }
 
-    if (Object.hasOwn(data, 'weather') && Object.hasOwn(data.weather[0], 'icon')) {
-        console.log("hi");
-        document.getElementById("result-weather").src = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
+    if (Object.hasOwn(data, 'weather')) {
+        if (Object.hasOwn(data.weather[0], 'icon')) {
+            document.getElementById("result-image").src = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
+        }
+        if (Object.hasOwn(data.weather[0], 'description')) {
+            document.getElementById("weather-status").innerHTML = capitalize(data.weather[0].description);
+        }
     }
 }
 
@@ -187,5 +193,21 @@ function setAirQuality(data) {
     }
     else {
         document.getElementById("aqi").innerHTML = "[No Air Quality Data Found]";
+    }
+}
+
+// capitalize a string's first letter of each word, excluding certain words
+function capitalize(s) {
+    if (s) {
+        words = s.split(" ");
+        for (let i = 0; i < words.length; i++) {
+            if (s !== "with" && s !== "and") {
+                words[i] = words[i][0].toUpperCase() + words[i].substr(1);
+            }
+        }
+        return words.join(" ");
+    }
+    else {
+        return "";
     }
 }

@@ -498,18 +498,61 @@ const iso2CodesByCountryName = {
     'češka': 'CZ',
 };
 
+unicodeMappings = {
+    'A': '🇦',
+    'B': '🇧',
+    'C': '🇨',
+    'D': '🇩',
+    'E': '🇪',
+    'F': '🇫',
+    'G': '🇬',
+    'H': '🇭',
+    'I': '🇮',
+    'J': '🇯',
+    'K': '🇰',
+    'L': '🇱',
+    'M': '🇲',
+    'N': '🇳',
+    'O': '🇴',
+    'P': '🇵',
+    'Q': '🇶',
+    'R': '🇷',
+    'S': '🇸',
+    'T': '🇹',
+    'U': '🇺',
+    'V': '🇻',
+    'W': '🇼',
+    'X': '🇽',
+    'Y': '🇾',
+    'Z': '🇿'
+};
+
+// given a iso3166 2-digit code return the country's name
 function getCountryName(countryCode) {
     if (isoCountries.hasOwnProperty(countryCode)) {
         return isoCountries[countryCode];
-    } else {
+    }
+    else {
         return false;
     }
 }
 
+// given a country's name return the country's iso3166 2-digit code
 function getCountryCode(countryName) {
     if (iso2CodesByCountryName.hasOwnProperty(countryName)) {
         return iso2CodesByCountryName[countryName];
-    } else {
+    }
+    else {
         return false;
+    }
+}
+
+// return the unicode regional letters to create flags on supported browsers
+function isoToUnicode(s) {
+    if (s && s.length === 2) {
+        return unicodeMappings[s[0]] + unicodeMappings[s[1]];
+    }
+    else {
+        return "";
     }
 }
