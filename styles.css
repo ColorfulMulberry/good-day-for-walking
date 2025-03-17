@@ -22,6 +22,7 @@
 
 body {
     font-family: "Rubik", sans-serif;
+    background-color: #000;
 }
 
 /*
@@ -41,7 +42,7 @@ body {
     font-optical-sizing: auto;
     font-weight: 300;
     font-style: normal;
-    font-size: 2.2rem;
+    font-size: 2.5rem;
     text-align: center;
     color: white;
 }
@@ -108,29 +109,42 @@ body {
     flex-direction: row;
 }
 
+#score-text {
+    margin-bottom: 3rem;
+}
+
 #location-name {
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
 }
 
 #result-image {
     width: 30%;
     height: auto;
-    background-color: white;
+    background-color: grey;
     border-radius: 10px;
-    margin-top: 0.5rem;
+    margin-top: 5%;
 }
 
 #res-left {
     width: 25%;
     margin-left: 15%;
     margin-right: 5%;
-    background-color: black;
+    background-color: #36033A;
     border-radius: 20px;
+    border: 2px black solid;
 }
 
 #res-right {
     width: 40%;
     margin-right: 15%;
+    display: flex;
+    background-color: #36033A;
+    border-radius: 20px;
+    border: 2px black solid;
+}
+
+#summary {
+    margin: auto;
 }
 
 #error-display {

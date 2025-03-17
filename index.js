@@ -83,6 +83,7 @@ function fetchAirQuality(weatherData) {
         })
         .then(data => {
             setAirQuality(data);
+            setResultDisplay(weatherData, data);
         })
         .catch(err => {
             displayError(err);
@@ -109,7 +110,6 @@ function displayData(data) {
 
     // set text fields in result components
     setPrecipitation(data);
-    setResultDisplay(data);
     setTemperature(data);
     setWindSpeed(data);
 
@@ -117,45 +117,49 @@ function displayData(data) {
 }
 
 // set the values in the result display
-function setResultDisplay(data) {
-    if (Object.hasOwn(data, 'name')) {
-        if (Object.hasOwn(data, 'sys') && Object.hasOwn(data.sys, 'country')) {
-            if (getCountryName(data.sys.country)) {
-                console.log(data.sys.country);
-                document.getElementById("location-name").innerHTML = this.cityName + ", " + getCountryName(data.sys.country) + " " + isoToUnicode(data.sys.country);
+function setResultDisplay(weatherData, airData) {
+    if (Object.hasOwn(weatherData, 'name')) {
+        if (Object.hasOwn(weatherData, 'sys') && Object.hasOwn(weatherData.sys, 'country')) {
+            if (getCountryName(weatherData.sys.country)) {
+                console.log(weatherData.sys.country);
+                document.getElementById("location-name").innerHTML = this.cityName + ", " + getCountryName(weatherData.sys.country) + " " + isoToUnicode(weatherData.sys.country);
             }
             else {
                 document.getElementById("location-name").innerHTML = this.cityName;
             }
         }
         else {
-            document.getElementById("location-name").innerHTML = data.name;
+            document.getElementById("location-name").innerHTML = weatherData.name;
         }
     }
     else {
         document.getElementById("location-name").innerHTML = "Name Not Found";
     }
 
-    if (Object.hasOwn(data, 'weather')) {
-        if (Object.hasOwn(data.weather[0], 'icon')) {
-            document.getElementById("result-image").src = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
+    if (Object.hasOwn(weatherData, 'weather')) {
+        if (Object.hasOwn(weatherData.weather[0], 'icon')) {
+            document.getElementById("result-image").src = `https://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png`;
         }
-        if (Object.hasOwn(data.weather[0], 'description')) {
-            document.getElementById("weather-status").innerHTML = capitalize(data.weather[0].description);
+        if (Object.hasOwn(weatherData.weather[0], 'description')) {
+            document.getElementById("weather-status").innerHTML = capitalize(weatherData.weather[0].description);
         }
     }
+
+    scoreVals = calcScore(weatherData, airData);
+    document.getElementById("score").innerHTML = scoreVals.score;
+    document.getElementById("score-text").innerHTML = scoreVals.scoreText;
 }
 
 // set the values in the precipitation tile
 function setPrecipitation(data) {
     if (Object.hasOwn(data, 'rain')) {
-        document.getElementById("precip-amt").innerHTML = `Rain - ${data.rain["1h"]} mm/hour`;
+        document.getElementById("precip-amt").innerHTML = `Rain - ${data.rain["1h"]} mm/h`;
     }
     else if (Object.hasOwn(data, 'snow')) {
-        document.getElementById("precip-amt").innerHTML = `Snow - ${data.snow["1h"]} mm/hour`;
+        document.getElementById("precip-amt").innerHTML = `Snow - ${data.snow["1h"]} mm/h`;
     }
     else {
-        document.getElementById("precip-amt").innerHTML = "No Precipitation";
+        document.getElementById("precip-amt").innerHTML = "None";
     }
 }
 
@@ -210,4 +214,97 @@ function capitalize(s) {
     else {
         return "";
     }
+}
+
+// calculates the score for how advisable it is to go outside
+function calcScore(weatherData, airData) {
+    const score = {
+        1: "Bad",
+        2: "Below Average",
+        3: "Average",
+        4: "Good",
+        5: "Excellent"
+    };
+    const scoreText = {
+        1: "It's a bad day for walking outside.",
+        2: "It's a below average day for walking outside.",
+        3: "It's an okay day for walking outside.",
+        4: "It's a good day for walking outside.",
+        5: "It's an excellent day for walking outside.",
+        6: "It's a perfect day for walking outside.",
+    };
+    let mainWeather = "";
+    let numScore = 3;
+    let airScore = 0;
+    let windScore = 0;
+    let precipScore = 0;
+    let tempScore = 0;
+    const inadvisable = " Walking outside is inadvisable.";
+
+    if (Object.hasOwn(weatherData, "weather") && Object.hasOwn(weatherData.weather[0], "main")) {
+        mainWeather = weatherData.weather[0].main;
+    }
+    // "killer" main weather conditions (bad idea to go outside with these conditions)
+    switch (mainWeather) {
+        case "Dust":
+        case "Smoke":
+        case "Sand":
+        case "Dust":
+        case "Ash":
+        case "Tornado":
+            return { score: score[1], scoreText: scoreText[1] };
+    }
+
+    // more "killer" conditions
+    // check for moderate rain (>4 mm/h)
+    if (Object.hasOwn(weatherData, "rain") && data.rain["1h"] >= 4) {
+        return { score: score[1], scoreText: scoreText[1] };
+    }
+    // check for heavy snow (>15 mm/h)
+    else if (Object.hasOwn(weatherData, "snow") && data.snow["1h"] >= 15) {
+        return { score: score[1], scoreText: scoreText[1] };
+    }
+    // check for extremely poor air quality (aqi 5)
+    else if (Object.hasOwn(airData, 'list') && Object.hasOwn(airData.list[0], 'main')
+        && Object.hasOwn(airData.list[0].main, 'aqi') && airData.list[0].main.aqi === 5) {
+        return { score: score[1], scoreText: scoreText[1] };
+    }
+    // check for extremely low or high temperatures (>40C or <-20C)
+    else if (Object.hasOwn(weatherData, "main") && Object.hasOwn(weatherData.main, "temp")
+        && (weatherData.main.temp >= 40 || weatherData.main.temp <= -20)) {
+        return { score: score[1], scoreText: scoreText[1] };
+    }
+    // check for very strong wind (>62km/h)
+    else if (Object.hasOwn(data, 'wind') && Object.hasOwn(data.wind, 'speed') && (Math.round(data.wind.speed * 36) / 10) >= 62) {
+        return { score: score[1], scoreText: scoreText[1] };
+    }
+
+    // calculate the air quality score
+    if (Object.hasOwn(airData, 'list') && Object.hasOwn(airData.list[0], 'main' && Object.hasOwn(airData.list[0].main, 'aqi'))) {
+        airScore = airData.list[0].main.aqi;
+        switch (airScore) {
+            case 1:
+            case 2:
+                airScore = 0;
+                break;
+            case 3:
+                airScore = 1;
+                break;
+            case 4:
+                airScore = 2;
+                break;
+        }
+    }
+
+    if (Object.hasOwn(data, 'wind') && Object.hasOwn(data.wind, 'speed') && (Math.round(data.wind.speed * 36) / 10) >= 62) {
+        wind = Math.round(data.wind.speed * 36) / 10;
+        if (wind < 12) {
+            windScore = 0;
+        }
+    }
+
+    // 0 = Excellent, 1 = Good, 2 = Average, 3 = Below Average
+
+    // return the results of the calculations
+    return { score: score[numScore], scoreText: scoreText[numScore] };
 }

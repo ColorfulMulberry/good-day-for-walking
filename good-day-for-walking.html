@@ -9,14 +9,14 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 
-<body style="background-color: #000">
+<body>
     <div class="header">
         <h1 class="ubuntu-regular">Is it a Good Day for Walking?</h1>
     </div>
 
     <div class="search">
         <h2 class="rubik-header">Find your City</h2>
-        <!-- runs the search if enter is pressed in either input box -->
+        <!-- runs a search if enter key is pressed in either input box -->
         <p><input type="text" id="cityName" onkeyup="if (event.keyCode == 13) searchCity()" class="rubik-body"
                 placeholder="City Name" /></p>
         <p><input type="text" id="countryName" onkeyup="if (event.keyCode == 13) searchCity()" class="rubik-body"
@@ -29,16 +29,16 @@
     </div>
 
     <div id="result-display" class="hide">
-        <div id="location-name" class="rubik-body"></div>
+        <div id="score" class="ubuntu-regular"></div>
+        <div id="score-text" class="rubik-header"></div>
+        <div id="location-name" class="rubik-header"></div>
         <div id="result">
             <div id="res-left">
                 <img id="result-image" src="" />
-                <p id="weather-status" class="rubik-body">thunderstorm with heavy drizzle</p>
+                <p id="weather-status" class="rubik-body"></p>
             </div>
-            <div id="res-right" style="display:flex;">
-                <p class="rubik-body" style="margin: auto;">
-                    This is where the summary of environmental conditions will be displayed.
-                </p>
+            <div id="res-right">
+                <p id="summary" class="rubik-body">Placeholder</p>
             </div>
         </div>
     </div>
