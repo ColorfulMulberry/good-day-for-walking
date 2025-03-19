@@ -1,6 +1,8 @@
 // finds a city given a mandatory city name and optional country name
 function searchCity() {
-    this.apikey = key;
+    // key is present here since github pages cannot securely store them
+    // would normally be read from config.js instead
+    this.apikey = "3cff316fec2a0f899a5cfd266dddb235";
     let city = document.getElementById("cityName").value;
     let country = document.getElementById("countryName").value;
     this.lat = 0;
