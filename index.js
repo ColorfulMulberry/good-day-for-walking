@@ -94,6 +94,7 @@ function fetchAirQuality(weatherData) {
         });
 }
 
+// displays an error tile whenever an error occurs
 function displayError(errorMsg) {
     // hide result components, show error component
     document.getElementById("row1").style.display = "none";
