@@ -7,6 +7,7 @@ function searchCity() {
     this.lon = 0;
     // using the city name returned from geocoding since weather api can return incorrect city name
     this.cityName = "";
+    this.countryCode = "";
 
     // city left empty
     if (!city) {
@@ -37,6 +38,7 @@ function searchCity() {
                 this.lat = data[0].lat;
                 this.lon = data[0].lon;
                 this.cityName = data[0].name;
+                if (Object.hasOwn(data[0], 'country')) this.countryCode = data[0].country;
                 fetchWeather();
             }
             else {
@@ -118,18 +120,14 @@ function displayData(data) {
 
 // set the values in the result display
 function setResultDisplay(weatherData, airData) {
-    if (Object.hasOwn(weatherData, 'name')) {
-        if (Object.hasOwn(weatherData, 'sys') && Object.hasOwn(weatherData.sys, 'country')) {
-            if (getCountryName(weatherData.sys.country)) {
-                console.log(weatherData.sys.country);
-                document.getElementById("location-name").innerHTML = this.cityName + ", " + getCountryName(weatherData.sys.country) + " " + isoToUnicode(weatherData.sys.country);
-            }
-            else {
-                document.getElementById("location-name").innerHTML = this.cityName;
-            }
+    if (this.cityName) {
+        if (this.countryCode) {
+            document.getElementById("location-name").innerHTML = this.cityName
+                + ", " + getCountryName(this.countryCode)
+                + " " + isoToUnicode(this.countryCode);
         }
         else {
-            document.getElementById("location-name").innerHTML = weatherData.name;
+            document.getElementById("location-name").innerHTML = this.cityName;
         }
     }
     else {
@@ -148,18 +146,19 @@ function setResultDisplay(weatherData, airData) {
     scoreVals = calcScore(weatherData, airData);
     document.getElementById("score").innerHTML = scoreVals.score;
     document.getElementById("score-text").innerHTML = scoreVals.scoreText;
+    document.getElementById("score-summary").innerHTML = scoreVals.scoreSummary;
 }
 
 // set the values in the precipitation tile
 function setPrecipitation(data) {
-    if (Object.hasOwn(data, 'rain')) {
+    if (Object.hasOwn(data, 'rain') && Object.hasOwn(data.rain, '1h')) {
         document.getElementById("precip-amt").innerHTML = `Rain - ${data.rain["1h"]} mm/h`;
     }
-    else if (Object.hasOwn(data, 'snow')) {
+    else if (Object.hasOwn(data, 'snow') && Object.hasOwn(data.snow, '1h')) {
         document.getElementById("precip-amt").innerHTML = `Snow - ${data.snow["1h"]} mm/h`;
     }
     else {
-        document.getElementById("precip-amt").innerHTML = "None";
+        document.getElementById("precip-amt").innerHTML = "0 mm/h";
     }
 }
 
@@ -219,26 +218,23 @@ function capitalize(s) {
 // calculates the score for how advisable it is to go outside
 function calcScore(weatherData, airData) {
     const score = {
-        1: "Bad",
-        2: "Below Average",
-        3: "Average",
-        4: "Good",
-        5: "Excellent"
+        4: "Bad",
+        3: "Below Average",
+        2: "Average",
+        1: "Good",
+        0: "Excellent"
     };
     const scoreText = {
-        1: "It's a bad day for walking outside.",
-        2: "It's a below average day for walking outside.",
-        3: "It's an okay day for walking outside.",
-        4: "It's a good day for walking outside.",
-        5: "It's an excellent day for walking outside.",
-        6: "It's a perfect day for walking outside.",
+        4: "It's a bad day for walking outside.",
+        3: "It's a below average day for walking outside.",
+        2: "It's an okay day for walking outside.",
+        1: "It's a good day for walking outside.",
+        0: "It's an excellent day for walking outside.",
     };
     let mainWeather = "";
-    let numScore = 3;
-    let airScore = 0;
-    let windScore = 0;
-    let precipScore = 0;
-    let tempScore = 0;
+    let [airScore, windScore, precipScore, tempScore] = [0, 0, 0, 0];
+    // summary for each of the four criteria
+    let [airSumm, windSumm, precipSumm, tempSumm] = ["(air quality)", "(wind speed)", "(precipitation)", "(temperature)"];
     const inadvisable = " Walking outside is inadvisable.";
 
     if (Object.hasOwn(weatherData, "weather") && Object.hasOwn(weatherData.weather[0], "main")) {
@@ -252,59 +248,97 @@ function calcScore(weatherData, airData) {
         case "Dust":
         case "Ash":
         case "Tornado":
-            return { score: score[1], scoreText: scoreText[1] };
+            return { score: score[4], scoreText: scoreText[4], scoreSummary: "Extreme weather conditions present." + inadvisable };
     }
 
     // more "killer" conditions
     // check for moderate rain (>4 mm/h)
-    if (Object.hasOwn(weatherData, "rain") && data.rain["1h"] >= 4) {
-        return { score: score[1], scoreText: scoreText[1] };
+    if (Object.hasOwn(weatherData, "rain") && weatherData.rain["1h"] >= 4) {
+        return { score: score[4], scoreText: scoreText[4], scoreSummary: "Very heavy rainfall present." + inadvisable };
     }
     // check for heavy snow (>15 mm/h)
-    else if (Object.hasOwn(weatherData, "snow") && data.snow["1h"] >= 15) {
-        return { score: score[1], scoreText: scoreText[1] };
+    else if (Object.hasOwn(weatherData, "snow") && weatherData.snow["1h"] >= 15) {
+        return { score: score[4], scoreText: scoreText[4], scoreSummary: "Very heavy snowfall present." + inadvisable };
     }
     // check for extremely poor air quality (aqi 5)
     else if (Object.hasOwn(airData, 'list') && Object.hasOwn(airData.list[0], 'main')
         && Object.hasOwn(airData.list[0].main, 'aqi') && airData.list[0].main.aqi === 5) {
-        return { score: score[1], scoreText: scoreText[1] };
+        return { score: score[4], scoreText: scoreText[4], scoreSummary: "Extremely poor air quality present." + inadvisable };
     }
     // check for extremely low or high temperatures (>40C or <-20C)
-    else if (Object.hasOwn(weatherData, "main") && Object.hasOwn(weatherData.main, "temp")
-        && (weatherData.main.temp >= 40 || weatherData.main.temp <= -20)) {
-        return { score: score[1], scoreText: scoreText[1] };
+    else if (Object.hasOwn(weatherData, "main") && Object.hasOwn(weatherData.main, "temp")) {
+        let temperature = weatherData.main.temp;
+        if (temperature >= 40) {
+            return { score: score[4], scoreText: scoreText[4], scoreSummary: "Extremely high outdoor temperatures present." + inadvisable };
+        }
+        else if (temperature <= -20) {
+            return { score: score[4], scoreText: scoreText[4], scoreSummary: "Extremely low outdoor temperatures present." + inadvisable };
+        }
     }
     // check for very strong wind (>62km/h)
-    else if (Object.hasOwn(data, 'wind') && Object.hasOwn(data.wind, 'speed') && (Math.round(data.wind.speed * 36) / 10) >= 62) {
-        return { score: score[1], scoreText: scoreText[1] };
+    else if (Object.hasOwn(weatherData, 'wind')
+        && Object.hasOwn(weatherData.wind, 'speed')
+        && (Math.round(weatherData.wind.speed * 36) / 10) >= 62) {
+        return { score: score[4], scoreText: scoreText[4], scoreSummary: "Extremely strong winds present." + inadvisable };
     }
 
     // calculate the air quality score
-    if (Object.hasOwn(airData, 'list') && Object.hasOwn(airData.list[0], 'main' && Object.hasOwn(airData.list[0].main, 'aqi'))) {
-        airScore = airData.list[0].main.aqi;
-        switch (airScore) {
-            case 1:
-            case 2:
-                airScore = 0;
-                break;
-            case 3:
-                airScore = 1;
-                break;
-            case 4:
-                airScore = 2;
-                break;
-        }
+    if (Object.hasOwn(airData, 'list')
+        && Object.hasOwn(airData.list[0], 'main')
+        && Object.hasOwn(airData.list[0].main, 'aqi')) {
+        let aqi = airData.list[0].main.aqi;
+        if (aqi === 1) [airSumm, airScore] = ["good", 0];
+        else if (aqi === 2) [airSumm, airScore] = ["fair", 0];
+        else if (aqi === 3) [airSumm, airScore] = ["moderate", 1];
+        else[airSumm, airScore] = ["poor", 2];
     }
 
-    if (Object.hasOwn(data, 'wind') && Object.hasOwn(data.wind, 'speed') && (Math.round(data.wind.speed * 36) / 10) >= 62) {
-        wind = Math.round(data.wind.speed * 36) / 10;
-        if (wind < 12) {
-            windScore = 0;
-        }
+    // calculate wind speed score
+    if (Object.hasOwn(weatherData, 'wind')
+        && Object.hasOwn(weatherData.wind, 'speed')) {
+        let wind = Math.round(weatherData.wind.speed * 36) / 10;
+        if (wind < 12) [windSumm, windScore] = ["light", 0];
+        else if (wind < 29) [windSumm, windScore] = ["moderate", 1];
+        else if (wind < 40) [windSumm, windScore] = ["strong", 2];
+        else[windSumm, windScore] = ["very strong", 3];
     }
+
+    // calculate temperature score
+    if (Object.hasOwn(weatherData, 'main') && Object.hasOwn(weatherData.main, 'temp')) {
+        let temperature = weatherData.main.temp;
+        if (temperature < -10) [tempSumm, tempScore] = ["very cold", 3];
+        else if (temperature < 5) [tempSumm, tempScore] = ["cold", 2];
+        else if (temperature < 20) [tempSumm, tempScore] = ["somewhat cold", 1];
+        else if (temperature < 25) [tempSumm, tempScore] = ["ideal", 0];
+        else if (temperature < 30) [tempSumm, tempScore] = ["somewhat warm", 1];
+        else if (temperature < 35) [tempSumm, tempScore] = ["warm", 2];
+        else[tempSumm, tempScore] = ["very warm", 3];
+    }
+
+    // calculate precipitation score
+    if (Object.hasOwn(weatherData, 'rain') && Object.hasOwn(weatherData.rain, '1h')) {
+        let rain = weatherData.rain["1h"];
+        if (rain < 0.5) [precipSumm, precipScore] = ["Very light rain", 1];
+        else if (rain < 3) [precipSumm, precipScore] = ["Light rain", 2];
+        else[precipSumm, precipScore] = ["Moderate rain", 3];
+    }
+    else if (Object.hasOwn(weatherData, 'snow') && Object.hasOwn(weatherData.snow, '1h')) {
+        let snow = weatherData.snow["1h"];
+        if (snow < 5) [precipSumm, precipScore] = ["Very light snow", 1];
+        if (snow < 10) [precipSumm, precipScore] = ["Light snow", 2];
+        else[precipSumm, precipScore] = ["Moderate snow", 1];
+    }
+    else[precipSumm, precipScore] = ["No precipitation", 0];
 
     // 0 = Excellent, 1 = Good, 2 = Average, 3 = Below Average
+    // worst (largest) score determines the overall score
+    let scoreRes = Math.max(precipScore, tempScore, airScore, windScore);
 
     // return the results of the calculations
-    return { score: score[numScore], scoreText: scoreText[numScore] };
+    return {
+        score: score[scoreRes],
+        scoreText: scoreText[scoreRes],
+        scoreSummary: `${precipSumm} forecasted. The temperature will be ${tempSumm},
+        with ${windSumm} winds and ${airSumm} air quality.`
+    };
 }

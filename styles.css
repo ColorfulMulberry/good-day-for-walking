@@ -117,18 +117,13 @@ body {
     margin-bottom: 1.5rem;
 }
 
-#result-image {
-    width: 30%;
-    height: auto;
-    background-color: grey;
-    border-radius: 10px;
-    margin-top: 5%;
-}
-
 #res-left {
     width: 25%;
     margin-left: 15%;
     margin-right: 5%;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
     background-color: #36033A;
     border-radius: 20px;
     border: 2px black solid;
@@ -141,9 +136,23 @@ body {
     background-color: #36033A;
     border-radius: 20px;
     border: 2px black solid;
+    padding: 1rem;
 }
 
-#summary {
+#result-image {
+    width: 50%;
+    height: auto;
+    max-width: 6rem;
+    background-color: grey;
+    border-radius: 10px;
+    margin: auto;
+}
+
+#weather-status {
+    margin: auto;
+}
+
+#score-summary {
     margin: auto;
 }
 
@@ -205,8 +214,44 @@ button:active {
     display: none;
 }
 
+/* when screen width <= 1100px */
+@media screen and (max-width: 1100px) {
+
+    /* expand left and right tiles of result */
+    #res-left {
+        margin-left: 0%;
+        width: 40%;
+    }
+
+    #res-right {
+        margin-right: 0%;
+        width: 55%;
+    }
+}
+
 /* when screen width <= 700px */
 @media screen and (max-width: 700px) {
+
+    #result {
+        flex-direction: column;
+    }
+
+    #res-left {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+
+    #res-right {
+        width: 100%;
+    }
+
+    button {
+        width: 45%;
+    }
+
+    input {
+        width: 100%;
+    }
 
     /* make columns stack */
     .row {
