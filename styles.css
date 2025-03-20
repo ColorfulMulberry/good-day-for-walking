@@ -1,20 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&family=Ubuntu&display=swap');
 
-/* 
-            font size: rem/ch
-            width: %/vw/ch
-            height: %/rem/vh (vh can be inconsistent)
-            padding/margin: rem/em
-            media queries: em/vw (vw for fonts)
-
-            rem: root em (relative to root font, usu 16px)
-            em: relative to nearest parent elem with defined font
-            %: relative to size of parent container
-            vh/vw: viewport height/width
-            ch: relative to "0" char width in current font
-            px: absolute size
-        */
-
 /* box sizing */
 * {
     box-sizing: border-box;

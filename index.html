@@ -11,10 +11,12 @@
 </head>
 
 <body>
+    <!-- header tile -->
     <div class="header">
         <h1 class="ubuntu-regular">Is it a Good Day for Walking?</h1>
     </div>
 
+    <!-- search tile -->
     <div class="search">
         <h2 class="rubik-header">Find your City</h2>
         <!-- runs a search if enter key is pressed in either input box -->
@@ -25,10 +27,12 @@
         <button class="rubik-body" onclick="searchCity()">Search</button>
     </div>
 
+    <!-- error tile -->
     <div id="error-display" class="hide">
         <div id="err-msg" class="rubik-body"></div>
     </div>
 
+    <!-- result tile -->
     <div id="result-display" class="hide">
         <div id="score" class="ubuntu-regular"></div>
         <div id="score-text" class="rubik-header"></div>
@@ -44,24 +48,31 @@
         </div>
     </div>
 
+    <!-- first row of data tiles in desktop view -->
     <div id="row1" class="row hide">
+        <!-- precipitation tile -->
         <div class="tile precipitation">
             <h2 class="rubik-header">Precipitation</h2>
             <div id="precip-amt" class="rubik-body"></div>
             <img>
         </div>
 
+        <!-- temperature tile -->
         <div class="tile temperature">
             <h2 class="rubik-header">Temperature</h2>
             <div id="current-temp" class="rubik-body"></div>
         </div>
     </div>
+
+    <!-- second row of data tiles in desktop view -->
     <div id="row2" class="row hide">
+        <!-- wind speed tile -->
         <div class="tile wind-speed">
             <h2 class="rubik-header">Wind Speed</h2>
             <div id="wind" class="rubik-body"></div>
         </div>
 
+        <!-- air quality tile -->
         <div class="tile air-quality">
             <h2 class="rubik-header">Air Quality</h2>
             <div id="aqi" class="rubik-body"></div>

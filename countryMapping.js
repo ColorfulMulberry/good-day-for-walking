@@ -248,6 +248,7 @@ var isoCountries = {
     'ZW': 'Zimbabwe'
 };
 
+// mapping of full country names to their ISO 3166 country codes
 const iso2CodesByCountryName = {
     afghanistan: 'AF',
     'aland islands': 'AX',
@@ -498,6 +499,7 @@ const iso2CodesByCountryName = {
     'češka': 'CZ',
 };
 
+// mapping of capital alphabetic letters to their unicode counterparts
 unicodeMappings = {
     'A': '🇦',
     'B': '🇧',
