@@ -1,8 +1,9 @@
 # good-day-for-walking
  Is it a good day for walking outside? Type in your city's name and find out.
 
+----
 
-_good-day-for-walking_ is a website built to create recommendations for or against going outside. It only requires a city's name to work, and optionally a country name if the default result is located in a different country (e.g. London, GB instead of London, CA).
+_good-day-for-walking_ is a website built to create recommendations for or against going outside. It only requires a city's name, and optionally a country name if the default result returns the wrong different country (e.g. London, GB instead of London, CA).
 
 The website gathers current weather data from a weather service, then uses that data to determine if going outside to walk is recommended or not.
 
